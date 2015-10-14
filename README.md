@@ -2,12 +2,19 @@
 
 ## 目前支持的操作系统
 
-- debian 7.5
+### debian 7.5
+
+## LNMP构成
+
+- PHP 5.6.14
+- Nginx 1.9.5
+- MySQL debian apt安装 mysql-server-5.5 mysql-client-5.5
+- Redis 3.0.4
 
 ## 前提
   默认数据盘挂载到/data目录，若是没有额外数据盘，则需要先建立该目录
 ```
-  # mkdir /data
+  #sudo mkdir /data
 ```
 
   注意： `挂载之前，确认/data目录下没有文件，如果有文件，则需要先备份，否则挂载磁盘之后，该目录下之前的文件都会丢失`
