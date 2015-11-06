@@ -1,5 +1,7 @@
 #!/bin/bash
 
+osversion=`cat /etc/issue|awk '{printf("%s%s" ,$1,$3);}'`
+
 currdir=`pwd`
 function make_php_links()
 {
@@ -29,9 +31,18 @@ esac
 if [ $answer == 1 ] ; then
 apt-get install gcc build-essential autoconf pkg-config \
                 curl webp libxml2 libxml2-dev \
-                libzip-dev mcrypt libmcrypt-dev libpng12-dev libjpeg62-dev zlibc \
+                libzip-dev mcrypt libmcrypt-dev libpng12-dev zlibc \
                 libfreetype6 libfreetype6-dev openssl libssl-dev \
                 libcurl4-openssl-dev libpcre3 libpcre3-dev
+
+   case $osversion in
+     Debian8 )
+         apt-get install libjpeg-dev
+         ;;
+     Debian7 )
+         apt-get install libjpeg62-dev
+	 ;;
+   esac
 
 fi
 
@@ -62,15 +73,16 @@ esac
 
 if [ "$answer" == 1 ] || [ ! -f "/usr/local/php/bin/php" ]
 then
+    echo $currdir
     cd $currdir
     phpver=php-5.6.14
-    if [ !-f "$phpver.tar.bz2" ] ; then
+    if [ ! -f "$phpver.tar.bz2" ] ; then
       wget http://cn2.php.net/distributions/$phpver.tar.bz2
     fi
-    if [ !-d "$phpver" ] ; then
+    if [ ! -d "$phpver" ] ; then
           tar xjvf $phpver.tar.bz2
     fi
-
+exit
     cd $phpver
     make clean
     ./configure --prefix=/usr/local/$phpver \
@@ -176,7 +188,7 @@ if [ "$answer" == 1 ] || [ ! -f "/usr/local/nginx/sbin/nginx" ]
 then
     cd $currdir
     nginxver=nginx-1.9.5
-    if [ !-f "$nginxver.tar.gz" ]
+    if [ ! -f "$nginxver.tar.gz" ]
     then
       wget http://nginx.org/download/$nginxver.tar.gz
     fi
@@ -221,7 +233,7 @@ then
     cd $currdir
 
     redisver=redis-3.0.4
-    if [ !-f "$redisver.tar.gz" ]
+    if [ ! -f "$redisver.tar.gz" ]
     then
       wget http://download.redis.io/releases/$redisver.tar.gz
     fi
@@ -234,3 +246,4 @@ then
 
     cp -r $redisver /usr/local/redis
 fi
+
