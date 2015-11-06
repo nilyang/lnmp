@@ -241,7 +241,7 @@ then
           tar xzvf $redisver.tar.gz
     fi
 
-    cd $redisver
+    #cd $redisver
     cp redis3conf/* $redisver/
 
     cp -r $redisver /usr/local/redis
