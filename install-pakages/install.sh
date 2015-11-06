@@ -82,7 +82,7 @@ then
     if [ ! -d "$phpver" ] ; then
           tar xjvf $phpver.tar.bz2
     fi
-exit
+
     cd $phpver
     make clean
     ./configure --prefix=/usr/local/$phpver \
