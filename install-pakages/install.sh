@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 osversion=`cat /etc/issue|awk '{printf("%s%s" ,$1,$3);}'`
 
@@ -17,19 +17,27 @@ function make_php_links()
 	done
 }
 
-read  -p  "If reinstall env [Y/N]?" answer
+function askYesNo ()
+{
+    local answer
+    read  -p  "$1 [Y/N]?" answer
 
-case $answer in
-Y|y )
-    answer=1
-    ;;
-*)
-    answer=0
-    ;;
-esac
+    case $answer in
+    Y|y )
+        answer=1
+        ;;
+    *)
+        answer=0
+        ;;
+    esac
+    return $answer
+}
 
-if [ $answer == 1 ] ; then
-apt-get install gcc build-essential autoconf pkg-config \
+askYesNo "If reinstall env"
+
+if [ "$?" == 1 ] ; then
+
+   apt-get install gcc build-essential autoconf pkg-config \
                 curl webp libxml2 libxml2-dev \
                 libzip-dev mcrypt libmcrypt-dev libpng12-dev zlibc \
                 libfreetype6 libfreetype6-dev openssl libssl-dev \
@@ -52,26 +60,20 @@ if [[ ! ( "$mysqlcmd" =~ ^Usage\:.*$ ) ]]
 then
     apt-get install mysql-server mysql-client
     service mysql stop
-    cp -R -p /var/lib/mysql/ /data/mysql
-    mv /var/lib/mysql/ /var/lib/mysql-bak
-    ln -s /data/mysql/ /var/lib/mysql
+    askYesNo "If reinstall data?"
+    if [ "$?" == 1 ] ; then
+        cp -R -p /var/lib/mysql/ /data/mysql
+        mv /var/lib/mysql/ /var/lib/mysql-bak
+        ln -s /data/mysql/ /var/lib/mysql
+    fi
     service mysql start
 fi
 #
 
 
-read  -p  "If recompile php [Y/N]?" answer
+askYesNo "If recompile php"
 
-case $answer in
-Y|y )
-    answer=1
-    ;;
-*)
-    answer=0
-    ;;
-esac
-
-if [ "$answer" == 1 ] || [ ! -f "/usr/local/php/bin/php" ]
+if [ "$?" == 1 ] || [ ! -f "/usr/local/php/bin/php" ]
 then
     echo $currdir
     cd $currdir
@@ -173,18 +175,9 @@ then
 
 fi
 
-read  -p  "If recompile nginx [Y/N]?" answer
+askYesNo "If recompile nginx"
 
-case $answer in
-Y|y )
-    answer=1
-    ;;
-*)
-    answer=0
-    ;;
-esac
-
-if [ "$answer" == 1 ] || [ ! -f "/usr/local/nginx/sbin/nginx" ]
+if [ "$?" == 1 ] || [ ! -f "/usr/local/nginx/sbin/nginx" ]
 then
     cd $currdir
     nginxver=nginx-1.9.5
@@ -217,18 +210,9 @@ then
 fi
 
 
-read  -p  "If recompile redis [Y/N]?" answer
+askYesNo "If recompile redis"
 
-case $answer in
-Y|y )
-    answer=1
-    ;;
-*)
-    answer=0
-    ;;
-esac
-
-if [ "$answer" == 1 ] || [ ! -f "/usr/local/redis/src/redis-server" ]
+if [ "$?" == 1 ] || [ ! -f "/usr/local/redis/src/redis-server" ]
 then
     cd $currdir
 
