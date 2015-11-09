@@ -73,7 +73,7 @@ fi
 
 askYesNo "If recompile php"
 
-if [ "$?" == 1 ] || [ ! -f "/usr/local/php/bin/php" ]
+if [ "$?" == 1 ] # || [ ! -f "/usr/local/php/bin/php" ]
 then
     echo $currdir
     cd $currdir
@@ -177,7 +177,7 @@ fi
 
 askYesNo "If recompile nginx"
 
-if [ "$?" == 1 ] || [ ! -f "/usr/local/nginx/sbin/nginx" ]
+if [ "$?" == 1 ] # || [ ! -f "/usr/local/nginx/sbin/nginx" ]
 then
     cd $currdir
     nginxver=nginx-1.9.5
@@ -212,7 +212,7 @@ fi
 
 askYesNo "If recompile redis"
 
-if [ "$?" == 1 ] || [ ! -f "/usr/local/redis/src/redis-server" ]
+if [ "$?" == 1 ] # || [ ! -f "/usr/local/redis/src/redis-server" ]
 then
     cd $currdir
 
