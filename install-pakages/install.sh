@@ -56,9 +56,10 @@ fi
 
 #mysql
 mysqlcmd=`service mysql`
+mysqlver=5.5
 if [[ ! ( "$mysqlcmd" =~ ^Usage\:.*$ ) ]]
 then
-    apt-get install mysql-server mysql-client
+    apt-get install mysql-server-${mysqlver} mysql-client-${mysqlver}
     service mysql stop
     askYesNo "If reinstall data?"
     if [ "$?" == 1 ] ; then
