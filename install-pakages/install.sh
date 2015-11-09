@@ -55,19 +55,25 @@ if [ "$?" == 1 ] ; then
 fi
 
 #mysql
-mysqlcmd=`service mysql`
-mysqlver=5.5
-if [[ ! ( "$mysqlcmd" =~ ^Usage\:.*$ ) ]]
-then
-    apt-get install mysql-server-${mysqlver} mysql-client-${mysqlver}
-    service mysql stop
-    askYesNo "If reinstall data?"
-    if [ "$?" == 1 ] ; then
-        cp -R -p /var/lib/mysql/ /data/mysql
-        mv /var/lib/mysql/ /var/lib/mysql-bak
-        ln -s /data/mysql/ /var/lib/mysql
-    fi
-    service mysql start
+
+askYesNo "If reinstall MySQL"
+   
+if [  "$?" == 1 ] ; then
+   mysqlcmd=`service mysql`
+   mysqlver=5.5
+   if [[ ! ( "$mysqlcmd" =~ ^Usage\:.*$ ) ]]
+   then
+       apt-get install mysql-server-${mysqlver} mysql-client-${mysqlver}
+       service mysql stop
+       askYesNo "If reinstall data?"
+       if [ "$?" == 1 ] ; then
+           cp -R -p /var/lib/mysql/ /data/mysql
+           mv /var/lib/mysql/ /var/lib/mysql-bak
+           ln -s /data/mysql/ /var/lib/mysql
+       fi
+       service mysql start
+   fi
+
 fi
 #
 
@@ -82,12 +88,13 @@ then
     if [ ! -f "$phpver.tar.bz2" ] ; then
       wget http://cn2.php.net/distributions/$phpver.tar.bz2
     fi
-    if [ ! -d "$phpver" ] ; then
-          tar xjvf $phpver.tar.bz2
-    fi
+
+    rm -rf $phpver
+
+    tar xjvf $phpver.tar.bz2
 
     cd $phpver
-    make clean
+
     ./configure --prefix=/usr/local/$phpver \
                          --with-libxml-dir \
                          --enable-zip \
@@ -116,7 +123,7 @@ then
                          --with-fpm-user=www-data \
                          --with-fpm-group=www-data
 
-	make clean
+    make clean
     make
     if [ -f "/usr/local/$phpver/bin/php" ] ; then
         mv /usr/local/$phpver /usr/local/$phpver.bak
@@ -186,9 +193,8 @@ then
     then
       wget http://nginx.org/download/$nginxver.tar.gz
     fi
-    if [ ! -d "$nginxver" ] ; then
-          tar xzvf $nginxver.tar.gz
-    fi
+    rm -rf  $nginxver
+    tar xzvf $nginxver.tar.gz
 
     cd $nginxver
     make clean
