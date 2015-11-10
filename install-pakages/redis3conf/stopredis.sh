@@ -13,11 +13,11 @@ function findredis()
     echo $find
 }
 
-port=6379
+port=6387
 
-while [ $port -lt 6387 ]
+while [ $port -lt 6379 ]
 do
-    sleep 1
+    port=$[$port - 1]
     retval=$(findredis "redis-ser" $port)
     if [ "$retval" == 1 ] ; then
         /usr/local/redis/src/redis-cli -p $port shutdown
@@ -25,6 +25,6 @@ do
     else
         echo "redis-server:$port not run."
     fi
-    port=$[$port + 1]
+    sleep 1
 done
 
