@@ -1,8 +1,30 @@
-/usr/local/redis/src/redis-cli -p 6379 shutdown
-/usr/local/redis/src/redis-cli -p 6380 shutdown
-/usr/local/redis/src/redis-cli -p 6381 shutdown
-/usr/local/redis/src/redis-cli -p 6382 shutdown
-/usr/local/redis/src/redis-cli -p 6383 shutdown
-/usr/local/redis/src/redis-cli -p 6384 shutdown
-/usr/local/redis/src/redis-cli -p 6385 shutdown
-/usr/local/redis/src/redis-cli -p 6386 shutdown
+#!/usr/bin/env bash
+function findredis()
+{
+    local find
+    count=`netstat -ntla|awk '{printf("%s\n", $4);}'|awk -F':' '{print $2}'|grep $2|wc -l`
+    servname=`lsof -i:$2|grep 'LISTEN'|grep IPv4|awk '{printf("%s", $1);}'`
+
+    find=0
+    if [ $count -gt 0 ] && [[ ! ( "servname" =~ ^$1.*$ ) ]] ; then
+        find=1
+    fi
+    #echo $servname:$2 $count
+    echo $find
+}
+
+port=6379
+
+while [ $port -lt 6387 ]
+do
+    sleep 1
+    retval=$(findredis "redis-ser" $port)
+    if [ "$retval" == 1 ] ; then
+        /usr/local/redis/src/redis-cli -p $port shutdown
+        echo "redis-server:$port stop .."
+    else
+        echo "redis-server:$port not run."
+    fi
+    port=$[$port + 1]
+done
+
