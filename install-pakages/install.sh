@@ -84,7 +84,7 @@ if [ "$?" == 1 ] # || [ ! -f "/usr/local/php/bin/php" ]
 then
     echo $currdir
     cd $currdir
-    phpver=php-5.6.14
+    phpver=php-5.6.16
     if [ ! -f "$phpver.tar.bz2" ] ; then
       wget http://cn2.php.net/distributions/$phpver.tar.bz2
     fi
@@ -163,11 +163,14 @@ then
 
 	pecl install redis
 	pecl install mongo
+	pecl install pnctl
+	pecl install xdebug
+
 
     sed -i '/extension=redis.so/d' $php_ini
     echo "extension=redis.so" >> $php_ini
 
-        sed -i '/extension=mongo.so/d' $php_ini
+    sed -i '/extension=mongo.so/d' $php_ini
     echo "extension=mongo.so" >> $php_ini
 
 
@@ -180,6 +183,20 @@ then
     sed -i.bak 's/\s*;*listen.allowed_clients\s*=.*/listen.allowed_clients = 127.0.0.1/g' $fpm_conf
 
     #cpu_counts=`cat /proc/cpuinfo |grep "cpu cores"|wc -l`
+    echo "zend_extension=xdebug.so" >> $php_ini
+    echo "xdebug.remote_enable = on" >> $php_ini
+    echo "xdebug.remote_connect_back = on" >> $php_ini
+    echo 'xdebug.remote_host = "10.0.2.15"' >> $php_ini
+    echo "xdebug.remote_port = 9000" >> $php_ini
+    echo 'xdebug.remote_handler = "dbgp"' >> $php_ini
+    echo 'xdebug.idekey = "vagrant-xx"' >> $php_ini
+    echo 'xdebug.remote_log = "/tmp/xdebug.log"' >> $php_ini
+
+    sed -i '/extension=libevent.so/d' $php_ini
+    echo "extension=libevent.so" >> $php_ini
+
+    sed -i '/extension=pcntl.so/d' $php_ini
+    echo "extension=pcntl.so" >> $php_ini
 
 fi
 
@@ -237,6 +254,7 @@ then
     cd $currdir
     cp redis3conf/* $redisver/
 
-    cp -r $redisver /usr/local/redis
+    cp -r $redisver /usr/local/$redisver
+    ln -s /usr/local/$redisver/ /usr/local/redis
 fi
 
