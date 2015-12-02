@@ -195,6 +195,8 @@ then
     echo 'xdebug.idekey = "vagrant-xx"' >> $php_ini
     echo 'xdebug.remote_log = "/tmp/xdebug.log"' >> $php_ini
 
+    #add libevent for workerman
+    pecl install channel://pecl.php.net/libevent-0.1.0
     sed -i '/extension=libevent.so/d' $php_ini
     echo "extension=libevent.so" >> $php_ini
 
