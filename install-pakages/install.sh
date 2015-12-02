@@ -41,7 +41,7 @@ if [ "$?" == 1 ] ; then
                 curl webp libxml2 libxml2-dev \
                 libzip-dev mcrypt libmcrypt-dev libpng12-dev zlibc \
                 libfreetype6 libfreetype6-dev openssl libssl-dev \
-                libcurl4-openssl-dev libpcre3 libpcre3-dev
+                libcurl4-openssl-dev libpcre3 libpcre3-dev libevent-dev
 
    case $osversion in
      Debian8 )
@@ -120,6 +120,7 @@ then
                          --with-openssl \
                          --enable-opcache \
                          --enable-fpm \
+                         --enable-pcntl \
                          --with-fpm-user=www-data \
                          --with-fpm-group=www-data
 
@@ -163,7 +164,6 @@ then
 
 	pecl install redis
 	pecl install mongo
-	pecl install pnctl
 	pecl install xdebug
 
 
@@ -195,8 +195,9 @@ then
     sed -i '/extension=libevent.so/d' $php_ini
     echo "extension=libevent.so" >> $php_ini
 
-    sed -i '/extension=pcntl.so/d' $php_ini
-    echo "extension=pcntl.so" >> $php_ini
+	#pecl install pcntl
+    #sed -i '/extension=pcntl.so/d' $php_ini
+    #echo "extension=pcntl.so" >> $php_ini
 
 fi
 
