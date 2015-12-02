@@ -66,6 +66,9 @@ if [  "$?" == 1 ] ; then
        apt-get install mysql-server-${mysqlver} mysql-client-${mysqlver}
        service mysql stop
        askYesNo "If reinstall data?"
+       if [ !-d "/data/mysql" ] ; then
+            mkdir -p /data/mysql
+       fi
        if [ "$?" == 1 ] ; then
            cp -R -p /var/lib/mysql/ /data/mysql
            mv /var/lib/mysql/ /var/lib/mysql-bak
