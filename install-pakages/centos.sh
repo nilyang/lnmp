@@ -98,11 +98,12 @@ then
                          --with-pcre-dir \
                          --with-pear=/usr/local/pear \
                          --with-openssl \
-                      #   --enable-opcache \
                          --enable-fpm \
                          --enable-pcntl \
                          --with-fpm-user=$user \
                          --with-fpm-group=$group
+
+    #php > 5.5 --enable-opcache 
 
     make
     if [ -f "/usr/local/$phpver/bin/php" ] ; then
