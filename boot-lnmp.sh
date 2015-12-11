@@ -22,7 +22,7 @@ redis_pid_counts=`ps aux|grep "redis-server"|grep -v "grep"|wc -l`
 if [ $ostype == "Debian" ] ; then
     mysql_name=mysql
     mysql_status=`service $mysql_name`
-    if [[ ! ( "$mysql_status" =~ ^(Usage\:.*$ ) ]]
+    if [[ ! ( "$mysql_status" =~ ^Usage\:.*$ ) ]]
     then
        service $mysql_name start
     else
