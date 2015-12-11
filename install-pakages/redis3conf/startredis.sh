@@ -1,4 +1,19 @@
 #!/usr/bin/env bash
+function askYesNo ()
+{
+    local answer
+    read  -p  "$1 [Y/N]?" answer
+
+    case $answer in
+    Y|y )
+        answer=1
+        ;;
+    *)
+        answer=0
+        ;;
+    esac
+    return $answer
+}
 
 function findredis()
 {
@@ -24,20 +39,23 @@ else
     echo "redis-server:$port alredy stared."
 fi
 
-#slaves
-port=6380
-while [ $port -lt 6387 ]
-do
-    sleep 1
-    retval=$(findredis "redis-ser" $port)
-    if  [ "$retval" != 1 ] ; then
-        /usr/local/redis/src/redis-server /usr/local/redis/redis${port}.conf
-        echo "redis-server:$port started .."
-    else
-        echo "redis-server:$port alredy stared."
-    fi
+askYesNo "If recompile redis"
 
-    port=$[$port + 1]
+if [ "$?" == 1 ] ; then
+    #slaves
+    port=6380
+    while [ $port -lt 6387 ]
+    do
+        sleep 1
+        retval=$(findredis "redis-ser" $port)
+        if  [ "$retval" != 1 ] ; then
+            /usr/local/redis/src/redis-server /usr/local/redis/redis${port}.conf
+            echo "redis-server:$port started .."
+        else
+            echo "redis-server:$port alredy stared."
+        fi
 
-done
+        port=$[$port + 1]
 
+    done
+fi

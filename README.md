@@ -2,14 +2,24 @@
 
 ## 目前支持的操作系统
 
-### debian 7.5 / 8.0
+- debian 7.5 / 8.0
+- centos 6.5
 
 ## LNMP构成
+
+### Debian
 
 - PHP 5.6.14
 - Nginx 1.9.5
 - MySQL debian apt安装 mysql-server-5.5 mysql-client-5.5
 - Redis 3.0.4
+
+### Centos
+
+- PHP 5.4.45
+- nginx 1.9.5
+- MySQL cummunity 5.6 (yum 配置源安装install，详情参考 [centos 6.5 yum install mysql-5.6](http://my.oschina.net/lxrm/blog/542706))
+- Redis 3.0.5
 
 ## 前提
   默认数据盘挂载到/data目录，若是没有额外数据盘，则需要先建立该目录
@@ -32,7 +42,8 @@ $ tree
 ├── README.md  
 ├── boot-lnmp.sh   : lnmp 启动及重启脚本
 └── install-pakages
-    ├── install.sh :一键安装脚本
+    ├── centos.sh : centos 一键安装脚本
+    ├── debian.sh : debian 一键安装脚本
     └── redis3conf :redis配置文件，安装脚本会用到
         ├── redis.conf
         ├── redis3conf.tar.gz
@@ -43,8 +54,8 @@ $ tree
         ├── redis6384.conf
         ├── redis6385.conf
         ├── redis6386.conf
-        ├── startredis.sh
-        └── stopredis.sh
+        ├── startredis.sh  :启动redis脚本
+        └── stopredis.sh   :停止redis脚本
 
 ##########################################
 
