@@ -41,8 +41,8 @@ if [ "$?" == 1 ] ; then
 # [ autoconf pkgconfig ] was included in "Development Tools"
 # libjpeg-turbo is not turbojpeg
 
-yum groupinstall "Development Tools" \
-    autoconf pkgconfig \
+yum groupinstall "Development Tools" 
+yum install autoconf pkgconfig \
     curl libcurl-devel libwebp-tools libwebp libwebp-devel
     libxml2 libxml2-devel \
     libzip libzip-devel zlib zlib-devel \
