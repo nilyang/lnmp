@@ -103,7 +103,7 @@ then
                          --with-fpm-user=$user \
                          --with-fpm-group=$group
 
-    #php > 5.5 --enable-opcache 
+    #php > 5.5 --enable-opcache
 
     make
     if [ -f "/usr/local/$phpver/bin/php" ] ; then
@@ -124,7 +124,7 @@ then
 
     #php5.5+,opcahce is in kernnel ,just compile with --enable-opcache
     sed -i '/zend_extension=opcache.so/d' $php_ini
-    echo "zend_extension=opcache.so" >> $php_ini
+    #echo "zend_extension=opcache.so" >> $php_ini
 
     if [ -f "/usr/local/php" ] ; then
        rm /usr/local/php
@@ -144,7 +144,7 @@ then
 
 	pecl install redis
 	pecl install mongo
-	pecl install xdebug
+	#pecl install xdebug
 
 
     sed -i '/extension=redis.so/d' $php_ini
@@ -163,14 +163,14 @@ then
     sed -i.bak 's/\s*;*listen.allowed_clients\s*=.*/listen.allowed_clients = 127.0.0.1/g' $fpm_conf
 
     #cpu_counts=`cat /proc/cpuinfo |grep "cpu cores"|wc -l`
-    echo "zend_extension=xdebug.so" >> $php_ini
-    echo "xdebug.remote_enable = on" >> $php_ini
-    echo "xdebug.remote_connect_back = on" >> $php_ini
-    echo 'xdebug.remote_host = "10.0.2.15"' >> $php_ini
-    echo "xdebug.remote_port = 9000" >> $php_ini
-    echo 'xdebug.remote_handler = "dbgp"' >> $php_ini
-    echo 'xdebug.idekey = "vagrant-xx"' >> $php_ini
-    echo 'xdebug.remote_log = "/tmp/xdebug.log"' >> $php_ini
+    #echo "zend_extension=xdebug.so" >> $php_ini
+    #echo "xdebug.remote_enable = on" >> $php_ini
+    #echo "xdebug.remote_connect_back = on" >> $php_ini
+    #echo 'xdebug.remote_host = "10.0.2.15"' >> $php_ini
+    #echo "xdebug.remote_port = 9000" >> $php_ini
+    #echo 'xdebug.remote_handler = "dbgp"' >> $php_ini
+    #echo 'xdebug.idekey = "vagrant-xx"' >> $php_ini
+    #echo 'xdebug.remote_log = "/tmp/xdebug.log"' >> $php_ini
 
     #add libevent for workerman
     pecl install channel://pecl.php.net/libevent-0.1.0
