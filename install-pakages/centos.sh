@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+user=nobody
+group=nobody
 #osversion=`cat /etc/issue|awk '{printf("%s%s" ,$1,$3);}'`
 osversion=`cat /etc/issue | awk -F"\n" '{printf("%s",$1)}'|awk '{printf("%s %s\n", $1, $3)}'`
 
@@ -96,11 +98,11 @@ then
                          --with-pcre-dir \
                          --with-pear=/usr/local/pear \
                          --with-openssl \
-                         --enable-opcache \
+                      #   --enable-opcache \
                          --enable-fpm \
                          --enable-pcntl \
-                         --with-fpm-user=www-data \
-                         --with-fpm-group=www-data
+                         --with-fpm-user=$user \
+                         --with-fpm-group=$group
 
     make clean
     make
@@ -198,7 +200,7 @@ then
     make clean
 
     ./configure --prefix=/usr/local/nginx-1.9.5 \
-                --user=www-data --group=www-data \
+                --user=$group --group=$group \
                 --http-log-path=/var/log/nginx \
                 --with-http_ssl_module \
                 --with-pcre \
