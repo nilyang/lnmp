@@ -127,7 +127,6 @@ then
                          --with-fpm-user=www-data \
                          --with-fpm-group=www-data
 
-    make clean
     make
     if [ -f "/usr/local/$phpver/bin/php" ] ; then
         mv /usr/local/$phpver /usr/local/$phpver.bak
@@ -211,7 +210,7 @@ askYesNo "If recompile nginx"
 if [ "$?" == 1 ] # || [ ! -f "/usr/local/nginx/sbin/nginx" ]
 then
     cd $currdir
-    nginxver=nginx-1.9.5
+    nginxver=nginx-1.8.0
     if [ ! -f "$nginxver.tar.gz" ]
     then
       wget http://nginx.org/download/$nginxver.tar.gz
@@ -220,15 +219,14 @@ then
     tar xzvf $nginxver.tar.gz
 
     cd $nginxver
-    make clean
 
     ./configure --prefix=/usr/local/nginx-1.9.5 \
                 --user=www-data --group=www-data \
                 --http-log-path=/var/log/nginx \
                 --with-http_ssl_module \
                 --with-pcre \
-                --with-stream \
-                --with-stream_ssl_module \
+               # --with-stream \
+               # --with-stream_ssl_module \
                 --with-http_auth_request_module
     make
     make install
@@ -246,7 +244,7 @@ if [ "$?" == 1 ] # || [ ! -f "/usr/local/redis/src/redis-server" ]
 then
     cd $currdir
 
-    redisver=redis-3.0.4
+    redisver=redis-3.0.5
     if [ ! -f "$redisver.tar.gz" ]
     then
       wget http://download.redis.io/releases/$redisver.tar.gz

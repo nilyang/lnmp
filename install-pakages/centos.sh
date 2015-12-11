@@ -104,7 +104,6 @@ then
                          --with-fpm-user=$user \
                          --with-fpm-group=$group
 
-    make clean
     make
     if [ -f "/usr/local/$phpver/bin/php" ] ; then
         mv /usr/local/$phpver /usr/local/$phpver.bak
@@ -188,7 +187,7 @@ askYesNo "If recompile nginx"
 if [ "$?" == 1 ] # || [ ! -f "/usr/local/nginx/sbin/nginx" ]
 then
     cd $currdir
-    nginxver=nginx-1.9.5
+    nginxver=nginx-1.8.0
     if [ ! -f "$nginxver.tar.gz" ]
     then
       wget http://nginx.org/download/$nginxver.tar.gz
@@ -197,15 +196,14 @@ then
     tar xzvf $nginxver.tar.gz
 
     cd $nginxver
-    make clean
 
-    ./configure --prefix=/usr/local/nginx-1.9.5 \
+    ./configure --prefix=/usr/local/$nginxver \
                 --user=$group --group=$group \
                 --http-log-path=/var/log/nginx \
                 --with-http_ssl_module \
                 --with-pcre \
-                --with-stream \
-                --with-stream_ssl_module \
+            #   --with-stream \
+            #   --with-stream_ssl_module \
                 --with-http_auth_request_module
     make
     make install

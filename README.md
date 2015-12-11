@@ -10,14 +10,14 @@
 ### Debian
 
 - PHP 5.6.14
-- Nginx 1.9.5
+- Nginx 1.8.0
 - MySQL debian apt安装 mysql-server-5.5 mysql-client-5.5
-- Redis 3.0.4
+- Redis 3.0.5
 
 ### Centos
 
 - PHP 5.4.45
-- nginx 1.9.5
+- nginx 1.8.0
 - MySQL cummunity 5.6 (yum 配置源安装install，详情参考 [centos 6.5 yum install mysql-5.6](http://my.oschina.net/lxrm/blog/542706))
 - Redis 3.0.5
 
