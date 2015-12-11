@@ -43,7 +43,7 @@ if [ "$?" == 1 ] ; then
 
 yum groupinstall "Development Tools"
 yum install autoconf pkgconfig \
-    curl libcurl-devel libwebp-tools libwebp libwebp-devel
+    curl libcurl-devel libwebp-tools libwebp libwebp-devel \
     libxml2 libxml2-devel \
     libzip libzip-devel zlib zlib-devel \
     mcrypt libmcrypt libmcrypt-devel \
