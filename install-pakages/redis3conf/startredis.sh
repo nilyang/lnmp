@@ -39,7 +39,7 @@ else
     echo "redis-server:$port alredy stared."
 fi
 
-askYesNo "If recompile redis"
+askYesNo "If start redis slaves?"
 
 if [ "$?" == 1 ] ; then
     #slaves
