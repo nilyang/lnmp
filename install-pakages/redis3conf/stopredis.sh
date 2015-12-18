@@ -15,7 +15,7 @@ function findredis()
 
 port=6387
 
-while [ $port -lt 6379 ]
+while [ $port -gt 6379 ]
 do
     port=$[$port - 1]
     retval=$(findredis "redis-ser" $port)
