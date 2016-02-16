@@ -9,13 +9,17 @@ currdir=`pwd`
 function make_php_links()
 {
 	phpcmds="pear peardev pecl phar phar.phar php php-cgi php-config phpize"
-	
-	for item in $phpcmds
+	for cmd in $phpcmds
 	do
-		src_cmd=/usr/local/php/bin/$item
-		dst_cmd=/usr/local/bin/$item
+		src_cmd=/usr/local/php/bin/$cmd
+		dst_cmd=/usr/local/bin/$cmd
 		if [ -f "$src_cmd" ] ; then
-			ln -s -f $src_cmd $dst_cmd
+		    if [ -L "$dst_cmd" ]; then
+			    ln -s -f $src_cmd $dst_cmd
+		    elif [ -f "$dst_cmd" ] ; then
+		        rm $dst_cmd
+                ln -s $src_cmd $dst_cmd
+            fi
 		fi
 	done
 }
@@ -62,12 +66,44 @@ askYesNo "If recompile php"
 
 if [ "$?" == 1 ] # || [ ! -f "/usr/local/php/bin/php" ]
 then
-    echo $currdir
-    cd $currdir
-    phpver=php-5.4.45
-    if [ ! -f "$phpver.tar.bz2" ] ; then
-      wget http://cn2.php.net/distributions/$phpver.tar.bz2
-    fi
+    main_ver=5
+    sub_ver=4
+    trd_ver=45
+    try_times="1 2 3"
+    for try in $try_times
+    do
+        echo $currdir
+        cd $currdir
+        read -n20 -p "Please input PHP version(e.g: 5.4.45):" vernum
+        declare -a verarr=(`echo $phpver | tr "." "\n"`)
+        main_ver=${verarr[@]:0:1}
+        sub_ver=${verarr[@]:1:1}
+        trd_ver=${verarr[@]:2:1}
+
+        if [ $main_ver < 5 ]; then
+            echo "main version < 5": $phpver please retry
+            try_times="1 2 3"
+            continue
+        fi
+
+        if [ $sub_ver < 4 ]; then
+            echo "sub version < 4": $phpver please retry
+            try_times="1 2 3"
+            continue
+        fi
+
+        phpver=php-$vernum
+        if [ ! -f "$phpver.tar.bz2" ] ; then
+          echo wget http://cn2.php.net/distributions/$phpver.tar.bz2
+          wget http://cn2.php.net/distributions/$phpver.tar.bz2
+        fi
+        if [ ! -f "$phpver.tar.bz2" ];then
+            echo "get $phpver.tar.bz2 Fail. Please check version"
+            exit 1
+        else
+            break
+        fi
+    done
 
     rm -rf $phpver
 
@@ -75,7 +111,7 @@ then
 
     cd $phpver
 
-    ./configure --prefix=/usr/local/$phpver \
+    configure_params= --prefix=/usr/local/$phpver \
                          --with-libxml-dir \
                          --enable-zip \
                          --with-zlib \
@@ -102,12 +138,14 @@ then
                          --enable-pcntl \
                          --with-fpm-user=$user \
                          --with-fpm-group=$group
+    if [ "$sub_ver" > 4 ] ; then
+        configure_params=$configure_params --enable-opcache
+    fi
 
-    #php > 5.5 --enable-opcache
-
+    ./configure $configure_params
     make
     if [ -f "/usr/local/$phpver/bin/php" ] ; then
-        mv /usr/local/$phpver /usr/local/$phpver.bak
+        mv /usr/local/$phpver /usr/local/$phpver.bak.`date +%y-%m-%d`
     fi
 
     make install
