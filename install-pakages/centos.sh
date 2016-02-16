@@ -149,7 +149,9 @@ then
     tar xjvf $phpver.tar.bz2
     cd $phpver
 
-    mv /usr/local/$phpver /usr/local/$phpver.bak.`date +%y-%m-%d`
+    if [ -d /usr/local/$phpver ]; then
+        mv /usr/local/$phpver /usr/local/$phpver.bak.`date +%y-%m-%d`
+    fi
 
     ./configure $configure_params && make && make install
 
