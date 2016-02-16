@@ -75,10 +75,12 @@ then
         echo $currdir
         cd $currdir
         read -n20 -p "Please input PHP version(e.g: 5.4.45):" vernum
-        declare -a verarr=(`echo $phpver | tr "." "\n"`)
+        declare -a verarr=(`echo $vernum | tr "." "\n"`)
         main_ver=${verarr[@]:0:1}
         sub_ver=${verarr[@]:1:1}
         trd_ver=${verarr[@]:2:1}
+
+        phpver=php-$vernum
 
         if [ $main_ver < 5 ]; then
             echo "main version < 5": $phpver please retry
@@ -92,7 +94,6 @@ then
             continue
         fi
 
-        phpver=php-$vernum
         if [ ! -f "$phpver.tar.bz2" ] ; then
           echo wget http://cn2.php.net/distributions/$phpver.tar.bz2
           wget http://cn2.php.net/distributions/$phpver.tar.bz2
