@@ -112,7 +112,7 @@ then
 
     cd $phpver
 
-    configure_params= --prefix=/usr/local/$phpver \
+    configure_params="--prefix=/usr/local/$phpver \
                          --with-libxml-dir \
                          --enable-zip \
                          --with-zlib \
@@ -138,7 +138,7 @@ then
                          --enable-fpm \
                          --enable-pcntl \
                          --with-fpm-user=$user \
-                         --with-fpm-group=$group
+                         --with-fpm-group=$group"
     if [ "$sub_ver" > 4 ] ; then
         configure_params=$configure_params --enable-opcache
     fi
