@@ -8,20 +8,26 @@ osversion=`cat /etc/issue | awk -F"\n" '{printf("%s",$1)}'|awk '{printf("%s %s\n
 currdir=`pwd`
 function make_php_links()
 {
-	phpcmds="pear peardev pecl phar phar.phar php php-cgi php-config phpize"
-	for cmd in $phpcmds
-	do
-		src_cmd=/usr/local/php/bin/$cmd
-		dst_cmd=/usr/local/bin/$cmd
-		if [ -f "$src_cmd" ] ; then
-		    if [ -L "$dst_cmd" ]; then
-			    ln -s -f $src_cmd $dst_cmd
-		    elif [ -f "$dst_cmd" ] ; then
-		        rm $dst_cmd
+    phpcmds="pear peardev pecl phar phar.phar php php-cgi php-config phpize"
+    for cmd in $phpcmds
+    do
+        src_cmd=/usr/local/php/bin/$cmd
+        dst_cmd=/usr/local/bin/$cmd
+        if [ -f "$src_cmd" ] ; then
+            echo $src_cmd
+            if [ -L "$dst_cmd" ]; then
+                echo ln -s -f $src_cmd $dst_cmd
+                ln -s -f $src_cmd $dst_cmd
+            elif [ -f "$dst_cmd" ] ; then
+                rm $dst_cmd
+               echo ln -s $src_cmd $dst_cmd
                 ln -s $src_cmd $dst_cmd
-            fi
-		fi
-	done
+           else
+                echo ln -s $src_cmd $dst_cmd
+                ln -s $src_cmd $dst_cmd
+           fi
+        fi
+    done
 }
 
 function askYesNo ()
