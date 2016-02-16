@@ -48,7 +48,7 @@ if [ "$?" == 1 ] ; then
 # libjpeg-turbo is not turbojpeg
 
 yum groupinstall "Development Tools"
-yum install autoconf pkgconfig \
+pkgs="autoconf pkgconfig \
     curl libcurl-devel libwebp-tools libwebp libwebp-devel \
     libxml2 libxml2-devel \
     libzip libzip-devel zlib zlib-devel \
@@ -58,8 +58,16 @@ yum install autoconf pkgconfig \
     freetype freetype-devel \
     openssl openssl-devel \
     pcre pcre-devel \
-    libevent libevent-devel
-fi
+    libevent libevent-devel"
+for pkg in $pkgs
+do
+    str=`rpm -qa|grep $pkg`
+    echo $pkg : $str
+    if [ "$str" == "" ] ; then
+       echo " |_empty $pkg"
+       yum install -y $pkg
+    fi
+done
 
 
 askYesNo "If recompile php"
@@ -80,20 +88,19 @@ then
         sub_ver=${verarr[@]:1:1}
         trd_ver=${verarr[@]:2:1}
 
-        phpver=php-$vernum
-
-        if [ $main_ver < 5 ]; then
+        if [[ $main_ver -lt 5 ]] ; then
             echo "main version < 5": $phpver please retry
             try_times="1 2 3"
             continue
         fi
 
-        if [ $sub_ver < 4 ]; then
+        if [[ $sub_ver -lt 4 ]] ; then
             echo "sub version < 4": $phpver please retry
             try_times="1 2 3"
             continue
         fi
 
+        phpver=php-$vernum
         if [ ! -f "$phpver.tar.bz2" ] ; then
           echo wget http://cn2.php.net/distributions/$phpver.tar.bz2
           wget http://cn2.php.net/distributions/$phpver.tar.bz2
@@ -106,13 +113,7 @@ then
         fi
     done
 
-    rm -rf $phpver
-
-    tar xjvf $phpver.tar.bz2
-
-    cd $phpver
-
-    configure_params="--prefix=/usr/local/$phpver \
+    configure_params=" --prefix=/usr/local/$phpver \
                          --with-libxml-dir \
                          --enable-zip \
                          --with-zlib \
@@ -140,16 +141,24 @@ then
                          --with-fpm-user=$user \
                          --with-fpm-group=$group"
     if [ "$sub_ver" > 4 ] ; then
-        configure_params=$configure_params --enable-opcache
+        configure_params="$configure_params --enable-opcache"
     fi
+    echo ./configure $configure_params
 
-    ./configure $configure_params
-    make
+    rm -rf $phpver
+    tar xjvf $phpver.tar.bz2
+    cd $phpver
+
+    mv /usr/local/$phpver /usr/local/$phpver.bak.`date +%y-%m-%d`
+
+    ./configure $configure_params && make && make install
+
     if [ -f "/usr/local/$phpver/bin/php" ] ; then
-        mv /usr/local/$phpver /usr/local/$phpver.bak.`date +%y-%m-%d`
+        echo "CONFIGURE && MAKE && INSTALL: OK"
+    else
+        echo "CONFIGURE && MAKE && INSTALL: FAIL"
+        exit
     fi
-
-    make install
 
     php_ini=/usr/local/$phpver/lib/php.ini
 
