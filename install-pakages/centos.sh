@@ -59,32 +59,34 @@ function askYesNo ()
 
 askYesNo "If reinstall env"
 
-if [ "$?" == 1 ] ; then
+if [ "$?" == 1 ] ;
+then
 
-# [ autoconf pkgconfig ] was included in "Development Tools"
-# libjpeg-turbo is not turbojpeg
+    # [ autoconf pkgconfig ] was included in "Development Tools"
+    # libjpeg-turbo is not turbojpeg
 
-yum groupinstall "Development Tools"
-pkgs="autoconf pkgconfig \
-    curl libcurl-devel libwebp-tools libwebp libwebp-devel \
-    libxml2 libxml2-devel \
-    libzip libzip-devel zlib zlib-devel \
-    mcrypt libmcrypt libmcrypt-devel \
-    libpng libpng-devel  \
-    libjpeg-turbo libjpeg-turbo-devel \
-    freetype freetype-devel \
-    openssl openssl-devel \
-    pcre pcre-devel \
-    libevent libevent-devel"
-for pkg in $pkgs
-do
-    str=`rpm -qa|grep $pkg`
-    echo $pkg : $str
-    if [ "$str" == "" ] ; then
-       echo " |_empty $pkg"
-       yum install -y $pkg
-    fi
-done
+    yum groupinstall "Development Tools"
+    pkgs="autoconf pkgconfig \
+        curl libcurl-devel libwebp-tools libwebp libwebp-devel \
+        libxml2 libxml2-devel \
+        libzip libzip-devel zlib zlib-devel \
+        mcrypt libmcrypt libmcrypt-devel \
+        libpng libpng-devel  \
+        libjpeg-turbo libjpeg-turbo-devel \
+        freetype freetype-devel \
+        openssl openssl-devel \
+        pcre pcre-devel \
+        libevent libevent-devel"
+    for pkg in $pkgs
+    do
+        str=`rpm -qa|grep $pkg`
+        echo $pkg : $str
+        if [ "$str" == "" ] ; then
+           echo " |_empty $pkg"
+           yum install -y $pkg
+        fi
+    done
+fi
 
 
 askYesNo "If recompile php"
@@ -266,8 +268,7 @@ if [ "$?" == 1 ] # || [ ! -f "/usr/local/nginx/sbin/nginx" ]
 then
     cd $currdir
     nginxver=nginx-1.8.0
-    if [ ! -f "$nginxver.tar.gz" ]
-    then
+    if [ ! -f "$nginxver.tar.gz" ] ; then
       wget http://nginx.org/download/$nginxver.tar.gz
     fi
     rm -rf  $nginxver
@@ -300,8 +301,7 @@ then
     cd $currdir
 
     redisver=redis-3.0.5
-    if [ ! -f "$redisver.tar.gz" ]
-    then
+    if [ ! -f "$redisver.tar.gz" ] ; then
       wget http://download.redis.io/releases/$redisver.tar.gz
     fi
     if [ ! -d "$redisver" ] ; then
