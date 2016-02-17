@@ -189,19 +189,19 @@ then
 
     if [ -f "/usr/local/php" ] ; then
        rm /usr/local/php
-	fi
+    fi
 
     ln -s /usr/local/$phpver/ /usr/local/php
 
-	if [ -f "/usr/local/php/bin/php" ] ; then
-		echo php linked Successfully!
-	fi
+    if [ -f "/usr/local/php/bin/php" ] ; then
+        echo php linked Successfully!
+    fi
 
-	gopear_file=/usr/local/$phpver/go-pear.phar
-	wget http://pear.php.net/go-pear.phar -O  $gopear_file
-	make_php_links
-	php $gopear_file
-	make_php_links
+    gopear_file=/usr/local/$phpver/go-pear.phar
+    wget http://pear.php.net/go-pear.phar -O  $gopear_file
+    make_php_links
+    php $gopear_file
+    make_php_links
 
     #pecl install redis
     #pecl install mongo
