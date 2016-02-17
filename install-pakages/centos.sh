@@ -33,16 +33,21 @@ function make_php_links()
 function askYesNo ()
 {
     local answer
-    read  -p  "$1 [Y/N]?" answer
-
-    case $answer in
-    Y|y )
-        answer=1
-        ;;
-    *)
-        answer=0
-        ;;
-    esac
+    answer=-1
+    while [[ $answer -eq -1  ]]; do
+      read  -p -n1 "$1 [Y/N]?" answer
+      case $answer in
+      Y|y )
+          answer=1
+          ;;
+      N/n)
+          answer=0
+          ;;
+      *)
+          answer=-1
+          ;;
+      esac
+    done
     return $answer
 }
 
@@ -198,17 +203,18 @@ then
 	php $gopear_file
 	make_php_links
 
-	pecl install redis
-	pecl install mongo
-	#pecl install xdebug
-
-
-    sed -i '/extension=redis.so/d' $php_ini
-    echo "extension=redis.so" >> $php_ini
-
-    sed -i '/extension=mongo.so/d' $php_ini
-    echo "extension=mongo.so" >> $php_ini
-
+    #pecl install redis
+    #pecl install mongo
+    #pecl install xdebug
+    for extension in "redis mongo xdebug"
+    do
+    askYesNo "Install $extension extension"
+    if [ "$?" == 1 ] ; then
+      pecl install $extension &&
+      sed -i '/extension=$extension.so/d' $php_ini &&
+      echo "extension=$extension.so" >> $php_ini
+    fi
+    done
 
     #php-fpm
     cp /usr/local/$phpver/etc/php-fpm.conf.default /usr/local/$phpver/etc/php-fpm.conf
@@ -229,11 +235,11 @@ then
     #echo 'xdebug.remote_log = "/tmp/xdebug.log"' >> $php_ini
 
     #add libevent for workerman
-    pecl install channel://pecl.php.net/libevent-0.1.0
-    sed -i '/extension=libevent.so/d' $php_ini
+    pecl install channel://pecl.php.net/libevent-0.1.0 &&
+    sed -i '/extension=libevent.so/d' $php_ini &&
     echo "extension=libevent.so" >> $php_ini
 
-	#pecl install pcntl
+    #pecl install pcntl
     #sed -i '/extension=pcntl.so/d' $php_ini
     #echo "extension=pcntl.so" >> $php_ini
 
@@ -295,4 +301,3 @@ then
     cp -r $redisver /usr/local/$redisver
     ln -s /usr/local/$redisver/ /usr/local/redis
 fi
-

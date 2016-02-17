@@ -16,10 +16,11 @@
 
 ### Centos
 
-- PHP 5.4.45
+- PHP > 5.4.0
 - nginx 1.8.0
 - MySQL cummunity 5.6 (yum 配置源安装install，详情参考 [centos 6.5 yum install mysql-5.6](http://my.oschina.net/lxrm/blog/542706))
 - Redis 3.0.5
+- - php的版本可选，支持5.5或者以上版本
 
 ## 前提
   默认数据盘挂载到/data目录，若是没有额外数据盘，则需要先建立该目录
@@ -28,14 +29,14 @@
 ```
 
   注意： `挂载之前，确认/data目录下没有文件，如果有文件，则需要先备份，否则挂载磁盘之后，该目录下之前的文件都会丢失`
-  
+
 ## 说明
 
 
 ### 目录结构
 ```
 ##########################################
-$ git clone https://github.com/nilyang/lnmp.git 
+$ git clone https://github.com/nilyang/lnmp.git
 $ cd lnmp
 $ tree
 .
