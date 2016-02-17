@@ -5,13 +5,14 @@ group=nobody
 #osversion=`cat /etc/issue|awk '{printf("%s%s" ,$1,$3);}'`
 osversion=`cat /etc/issue | awk -F"\n" '{printf("%s",$1)}'|awk '{printf("%s %s\n", $1, $3)}'`
 
+install_prefix=/usr/local/
 currdir=`pwd`
 function make_php_links()
 {
     phpcmds="pear peardev pecl phar phar.phar php php-cgi php-config phpize"
     for cmd in $phpcmds
     do
-        src_cmd=/usr/local/php/bin/$cmd
+        src_cmd=$install_prefix/php/bin/$cmd
         dst_cmd=/usr/local/bin/$cmd
         if [ -f "$src_cmd" ] ; then
             echo $src_cmd
@@ -33,20 +34,25 @@ function make_php_links()
 function askYesNo ()
 {
     local answer
-    answer=-1
-    while [[ $answer -eq -1  ]]; do
-      read  -p -n1 "$1 [Y/N]?" answer
+    while :
+    do
+      read  -n 5 -p "$1 [Y/N]?" answer
       case $answer in
       Y|y )
-          answer=1
-          ;;
-      N/n)
+         answer=1
+         echo 'Y'
+         ;;
+      N|n )
           answer=0
+          echo 'N'
           ;;
-      *)
+      * )
           answer=-1
           ;;
       esac
+      if [ ! $answer -eq -1 ] ; then
+          break
+      fi
     done
     return $answer
 }
@@ -124,7 +130,9 @@ then
         fi
     done
 
-    configure_params=" --prefix=/usr/local/$phpver \
+    php_install_dir=$install_prefix/$phpver
+
+    configure_params=" --prefix=$php_install_dir \
                          --with-libxml-dir \
                          --enable-zip \
                          --with-zlib \
@@ -145,7 +153,7 @@ then
                          --enable-sockets \
                          --enable-zip \
                          --with-pcre-dir \
-                         --with-pear=/usr/local/pear \
+                         --with-pear=$php_install_dir/pear \
                          --with-openssl \
                          --enable-fpm \
                          --enable-pcntl \
@@ -160,20 +168,20 @@ then
     tar xjvf $phpver.tar.bz2
     cd $phpver
 
-    if [ -d /usr/local/$phpver ]; then
-        mv /usr/local/$phpver /usr/local/$phpver.bak.`date +%y-%m-%d`
+    if [ -d $php_install_dir ]; then
+        mv $php_install_dir $php_install_dir.bak.`date +%y-%m-%d`
     fi
 
     ./configure $configure_params && make && make install
 
-    if [ -f "/usr/local/$phpver/bin/php" ] ; then
+    if [ -f "$php_install_dir/bin/php" ] ; then
         echo "CONFIGURE && MAKE && INSTALL: OK"
     else
         echo "CONFIGURE && MAKE && INSTALL: FAIL"
         exit
     fi
 
-    php_ini=/usr/local/$phpver/lib/php.ini
+    php_ini=$php_install_dir/lib/php.ini
 
     cp php.ini-production $php_ini
     echo "" >> $php_ini
@@ -187,38 +195,45 @@ then
     sed -i '/zend_extension=opcache.so/d' $php_ini
     #echo "zend_extension=opcache.so" >> $php_ini
 
-    if [ -f "/usr/local/php" ] ; then
-       rm /usr/local/php
+
+    if [ -L "$install_prefix/php" ] ; then
+       rm $install_prefix/php
     fi
 
-    ln -s /usr/local/$phpver/ /usr/local/php
+    ln -s $php_install_dir/ $install_prefix/php
 
-    if [ -f "/usr/local/php/bin/php" ] ; then
+    if [ -f "$install_prefix/php/bin/php" ] ; then
         echo php linked Successfully!
     fi
 
-    gopear_file=/usr/local/$phpver/go-pear.phar
-    wget http://pear.php.net/go-pear.phar -O  $gopear_file
-    make_php_links
-    php $gopear_file
-    make_php_links
+    askYesNo "if Make php soft links to /usr/local/bin/?"
+    if [ "$?" == 1 ]; then
+        make_php_links
+        php=/usr/local/bin/php
+    else
+        php=$php_install_dir/bin/php
+    fi
 
+    gopear_file=$php_install_dir/go-pear.phar
+    wget http://pear.php.net/go-pear.phar -O  $gopear_file
+
+    $php $gopear_file
     #pecl install redis
     #pecl install mongo
     #pecl install xdebug
     for extension in "redis mongo xdebug"
     do
-    askYesNo "Install $extension extension"
-    if [ "$?" == 1 ] ; then
-      pecl install $extension &&
-      sed -i '/extension=$extension.so/d' $php_ini &&
-      echo "extension=$extension.so" >> $php_ini
-    fi
+        askYesNo "Install $extension extension"
+        if [ "$?" == 1 ] ; then
+          pecl install $extension &&
+          sed -i '/extension=$extension.so/d' $php_ini &&
+          echo "extension=$extension.so" >> $php_ini
+        fi
     done
 
     #php-fpm
-    cp /usr/local/$phpver/etc/php-fpm.conf.default /usr/local/$phpver/etc/php-fpm.conf
-    fpm_conf=/usr/local/$phpver/etc/php-fpm.conf
+    cp $php_install_dir/etc/php-fpm.conf.default $php_install_dir/etc/php-fpm.conf
+    fpm_conf=$php_install_dir/etc/php-fpm.conf
     sed -i.bak 's/\s*;*rlimit_files\s*=.*/rlimit_files = 65535/g' $fpm_conf
     sed -i.bak 's/\s*;*pm.max_children\s*=.*/pm.max_children = 200/g' $fpm_conf
     sed -i.bak 's/\s*;*pm\s*=.*/pm = static/g' $fpm_conf
@@ -260,7 +275,7 @@ then
 
     cd $nginxver
 
-    ./configure --prefix=/usr/local/$nginxver \
+    ./configure --prefix=$install_prefix/$nginxver \
                 --user=$group --group=$group \
                 --http-log-path=/var/log/nginx \
                 --with-http_ssl_module \
@@ -271,9 +286,9 @@ then
     make
     make install
 
-    ln -s /usr/local/$nginxver/ /usr/local/nginx
+    ln -s $install_prefix/$nginxver/ $install_prefix/nginx
 
-    /usr/local/nginx/sbin/nginx -t
+    $install_prefix/nginx/sbin/nginx -t
 
 fi
 
@@ -298,6 +313,6 @@ then
     cd $currdir
     cp redis3conf/* $redisver/
 
-    cp -r $redisver /usr/local/$redisver
-    ln -s /usr/local/$redisver/ /usr/local/redis
+    cp -r $redisver $install_prefix/$redisver
+    ln -s $install_prefix/$redisver/ $install_prefix/redis
 fi
