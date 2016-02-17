@@ -61,7 +61,10 @@ askYesNo "If reinstall env"
 
 if [ "$?" == 1 ] ;
 then
-
+    mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.origin`date +%y-%m-%d`
+    wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.163.com/.help/CentOS6-Base-163.repo
+    yum clear all
+    yum makecache
     # [ autoconf pkgconfig ] was included in "Development Tools"
     # libjpeg-turbo is not turbojpeg
 
